@@ -1,0 +1,112 @@
+﻿<controls:MetroWindow x:Class="PasswordManagerV3.Views.AddEditCategoryWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:dd="clr-namespace:GongSolutions.Wpf.DragDrop;assembly=GongSolutions.Wpf.DragDrop"
+                      xmlns:viewModels="clr-namespace:PasswordManagerV3.ViewModels"
+                      xmlns:views="clr-namespace:PasswordManagerV3.Views"
+                      xmlns:converters="clr-namespace:PasswordManagerV3.Converters"
+                      xmlns:other="clr-namespace:PasswordManagerV3.Views.Other"
+                      mc:Ignorable="d"
+                      Height="300" Width="350"
+                      ResizeMode="NoResize" WindowStartupLocation="CenterOwner"
+                      d:DataContext="{d:DesignInstance d:Type=viewModels:AddEditCategoryWindowViewModel}" x:Name="view">
+    <controls:MetroWindow.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </controls:MetroWindow.Resources>
+    <Grid Background="{StaticResource GrayGradientBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Image Grid.Row="0" Width="70" Height="70" Margin="18,5,0,0" Source="../Icons/icon.png" HorizontalAlignment="Left" VerticalAlignment="Top">
+        </Image>
+        <Grid Grid.Row="0" Margin="80,0,0,0" Height="70" VerticalAlignment="Top">
+            <StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Title:</TextBlock>
+                    <TextBox Height="26" VerticalAlignment="Top" Width="200" Text="{Binding Title}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5" SnapsToDevicePixels="True">
+                    <TextBlock VerticalAlignment="Center" Margin="0,0,10,0">Icon:</TextBlock>
+                    <Border BorderBrush="#FFB4B4B4" BorderThickness="1" Background="Gainsboro" VerticalAlignment="Center">
+                        <Image Height="16" Width="16" Source="{Binding Icon, IsAsync=True}" />
+                    </Border>
+                    <Rectangle Fill="Black" VerticalAlignment="Stretch" Width="1" Margin="5,0"></Rectangle>
+                    <Button Command="{Binding IconFromFileCommand}" Margin="0,0,5,0">From File</Button>
+                    <Button Command="{Binding IconFromUrlCommand}" Margin="0,0,5,0">From URL</Button>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="0" Margin="0,80,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.Resources>
+                <DataTemplate x:Key="DragAdornerTemplate">
+                    <Border Padding="5" Background="#505962">
+                        <TextBlock Foreground="White" Text="{Binding WrappedItem.Name}" />
+                    </Border>
+                </DataTemplate>
+            </Grid.Resources>
+            <ListBox Width="200" Background="#42464A" Margin="5" x:Name="listBox" ItemsSource="{Binding Columns}"
+                     SelectedItem="{Binding SelectedItem}" dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.DragAdornerTemplate="{StaticResource DragAdornerTemplate}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <views:EditableTextBlock x:Name="editableTextBlock"
+                                                Text="{Binding  WrappedItem.Name, Mode=TwoWay}"
+                                                IsInEditMode="{Binding IsInEditMode, Mode=TwoWay}"
+                                                CanInteract="{Binding CanInteract, Mode=TwoWay}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Grid.Column="1" Margin="5" TextElement.FontSize="12">
+                <Button Style="{StaticResource MyButtonStyle}" HorizontalAlignment="Left"
+                        Command="{Binding AddColumnCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="../Icons/add.png" Margin="5" Stretch="None" />
+                        <TextBlock VerticalAlignment="Center" Margin="5" FontSize="12">Add column</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MyButtonStyle}" HorizontalAlignment="Left"
+                        Command="{Binding DeleteColumnCommand}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="../Icons/delete.png" Margin="5" Stretch="None" />
+                        <TextBlock VerticalAlignment="Center" Margin="5" FontSize="12">Delete column</TextBlock>
+                    </StackPanel>
+                </Button>
+                <CheckBox Margin="4"
+                          IsChecked="{Binding ElementName=listBox, Path=SelectedItem.WrappedItem.IsVisibleInTable, Mode=TwoWay}">
+                    Show in table
+                </CheckBox>
+                <CheckBox Margin="4"
+                          IsChecked="{Binding ElementName=listBox, Path=SelectedItem.WrappedItem.IsMultiline, Mode=TwoWay}">
+                    Multiline
+                </CheckBox>
+                <CheckBox Margin="4"
+                          IsChecked="{Binding ElementName=listBox, Path=SelectedItem.WrappedItem.IsProtected, Mode=TwoWay}">
+                    Protected
+                </CheckBox>
+            </StackPanel>
+        </Grid>
+        <Rectangle Grid.Row="1" Height="40" Fill="{StaticResource BlackGradientBrush}" />
+        <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+            <Button Margin="0,0,10,0" Width="60" Command="{Binding OkCommand}">
+                Ok
+            </Button>
+            <Button Margin="0,0,10,0" Width="60" Command="{Binding CancelCommand}">
+                Cancel
+            </Button>
+        </StackPanel>
+    </Grid>
+</controls:MetroWindow>

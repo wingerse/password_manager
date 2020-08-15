@@ -1,0 +1,192 @@
+﻿<UserControl x:Class="PasswordManagerV3.Views.MainView.MainView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:PasswordManagerV3.Views.MainView"
+             xmlns:models="clr-namespace:PasswordManagerV3.Models"
+             xmlns:viewModels="clr-namespace:PasswordManagerV3.ViewModels"
+             xmlns:mainView="clr-namespace:PasswordManagerV3.Views.MainView"
+             xmlns:views="clr-namespace:PasswordManagerV3.Views"
+             xmlns:entryValuePairControl="clr-namespace:PasswordManagerV3.Views.EntryValuePairControl"
+             mc:Ignorable="d"
+             d:DesignWidth="800" d:DesignHeight="450"
+             d:DataContext="{d:DesignInstance d:Type=viewModels:MainViewModel}">
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" MinWidth="200" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch" />
+        <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Fill="{StaticResource GrayGradientBrush}" />
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource MyButtonStyle}" Grid.Column="0" Command="{Binding LockCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/lockribbon.png" Margin="5" Width="20" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">Lock</TextBlock>
+                </StackPanel>
+            </Button>
+            <Rectangle Stroke="DarkGray" StrokeDashArray="2, 5" Width="1" HorizontalAlignment="Center" Grid.Column="1" />
+            <Button Style="{StaticResource MyButtonStyle}" Grid.Column="2" Command="{Binding BackupCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/backup.png" Margin="5" Width="20" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">Backup</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+        
+        <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal">
+            <Button Style="{StaticResource MyButtonStyle}" Command="{Binding NewEntryCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/add2.png" Margin="5" Stretch="None" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">New Entry</TextBlock>
+                </StackPanel>
+            </Button>
+            <Rectangle Stroke="DarkGray" StrokeDashArray="2, 5" Width="1" />
+            <Button Style="{StaticResource MyButtonStyle}" Command="{Binding AboutCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/about.png" Margin="5" Width="20" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">About</TextBlock>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+        <Grid Grid.Row="1" Grid.Column="0" Background="#42464A">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <ListBox Background="#42464A" Grid.Row="0" Grid.ColumnSpan="2" x:Name="listBox"
+                     SelectedItem="{Binding SelectedCategory, Mode=TwoWay}"
+                     ItemsSource="{Binding Categories}">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="Foreground" Value="White" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="models:Category">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Height="16" Width="16" Source="{Binding Icon}" Margin="0,0,5,0"
+                                   VerticalAlignment="Center" />
+                            <TextBlock VerticalAlignment="Center">
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Name"/>
+                                        <Binding Path="Entries.Count"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Background="{StaticResource GrayGradientBrush}" />
+            <Button Style="{StaticResource MyButtonStyle}" Grid.Row="1" Grid.Column="0"
+                    Command="{Binding AddCategoryCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/add.png" Margin="5" Stretch="None" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">Add</TextBlock>
+                </StackPanel>
+            </Button>
+            <Button Style="{StaticResource MyButtonStyle}" Grid.Row="1" Grid.Column="1"
+                    Command="{Binding DeleteCategoryCommand}">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="../../Icons/delete.png" Margin="5" Stretch="None" />
+                    <TextBlock VerticalAlignment="Center" Margin="5">Delete</TextBlock>
+                </StackPanel>
+            </Button>
+        </Grid>
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200" MinHeight="200"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <ListView Grid.Row="0" BorderThickness="0"
+                      ItemsSource="{Binding SelectedCategory.Entries}"
+                      SelectedItem="{Binding SelectedEntry}"
+                      x:Name="listView">
+                <ListView.Resources>
+                    <DataTemplate x:Key="IconCellTemplate" DataType="models:Entry">
+                        <Image Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Source="{Binding Icon}" />
+                    </DataTemplate>
+                    <Style x:Key="HeaderContainerStyle" TargetType="GridViewColumnHeader"
+                           BasedOn="{StaticResource {x:Type GridViewColumnHeader}}">
+                        <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    </Style>
+                    <local:CategoryToGridViewConverter x:Key="CategoryToGridViewConverter"
+                                                       HeaderContainerStyle="{StaticResource HeaderContainerStyle}"
+                                                       IconCellTemplate="{StaticResource IconCellTemplate}" />
+                </ListView.Resources>
+                <ListView.View>
+                    <Binding Path="SelectedCategory" Converter="{StaticResource CategoryToGridViewConverter}"/>
+                </ListView.View>
+            </ListView>
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" />
+            <DockPanel Grid.Row="2">
+                <DockPanel.Resources>
+                    <local:SelectedEntryToRibbonVisibilityConverter x:Key="SelectedEntryToRibbonVisibilityConverter"/>
+                    <local:EntryKeyValuePairToValueConverter x:Key="EntryKeyValuePairToValueConverter"/>
+                </DockPanel.Resources>
+                <DockPanel.Visibility>
+                    <Binding Path="SelectedEntry" Converter="{StaticResource SelectedEntryToRibbonVisibilityConverter}"/>
+                </DockPanel.Visibility>
+                
+                <Grid Background="{StaticResource GrayGradientBrush}" Height="Auto" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0">
+                        <Image Source="{Binding SelectedEntry.Icon}" Width="25" Height="25" VerticalAlignment="Center"/>
+                        <TextBlock FontSize="15" Text="{Binding SelectedEntry[Title], 
+                            Converter={StaticResource EntryKeyValuePairToValueConverter}}"  VerticalAlignment="Center" Margin="5,0"
+                                   TextTrimming="CharacterEllipsis" MaxWidth="400"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5,0,0,0">
+                        <Button Style="{StaticResource MyButtonStyle}" VerticalAlignment="Center"
+                                Command="{Binding EditEntryCommand}" Margin="0,0,5,0">
+                            <Image Source="../../Icons/edit.png" Stretch="None" ToolTip="Edit"/>
+                        </Button>
+                        <Button Style="{StaticResource MyButtonStyle}" VerticalAlignment="Center"
+                                Command="{Binding DeleteEntryCommand}" Margin="0,0,5,0">
+                            <Image Source="../../Icons/delete2.png" Width="13" ToolTip="Delete"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                <ItemsControl DockPanel.Dock="Bottom" Style="{StaticResource VirtualisingItemsControlStyle}"
+                              ItemsSource="{Binding SelectedEntry.EntryKeyValuePairs}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="models:EntryKeyValuePair">
+                            <entryValuePairControl:EntryKeyValuePairControl Key="{Binding Key}"
+                                                                         Value="{Binding Value}"
+                                                                         IsProtected="{Binding IsProtected}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Margin" Value="0,5"></Setter>
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                </ItemsControl>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</UserControl>

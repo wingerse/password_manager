@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="PasswordManagerV3.Views.EntryValuePairControl.EntryKeyValuePairControl"
+             x:Name="userControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PasswordManagerV3.Views.EntryValuePairControl"
+             xmlns:converters="clr-namespace:PasswordManagerV3.Converters"
+             mc:Ignorable="d">
+    <Grid DataContext="{Binding ElementName=userControl}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.Resources>
+            <converters:PasswordToDotConverter x:Key="PasswordToDotConverter"/>
+            <local:ProtectedToProtectedTextBoxVisibilityConverter x:Key="ProtectedToProtectedTextBoxVisibilityConverter"/>
+            <local:ProtectedToUnProtectedTextBlockVisibilityConverter x:Key="ProtectedToUnProtectedTextBlockVisibilityConverter"/>
+        </Grid.Resources>
+        
+        <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Key, StringFormat={}{0}:}" Margin="5,0" Foreground="DarkGray"/>
+        <TextBlock x:Name="unprotectedTextBlock" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                   Text="{Binding Value, Mode=OneWay}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
+                   Visibility="{Binding IsProtected, Mode=OneWay, Converter={StaticResource ProtectedToUnProtectedTextBlockVisibilityConverter}}"/>
+        <TextBlock x:Name="protectedTextBlock" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                   Text="{Binding Value, Mode=OneWay, Converter={StaticResource PasswordToDotConverter}}" TextTrimming="CharacterEllipsis" TextWrapping="Wrap"
+                   Visibility="{Binding IsProtected, Mode=OneWay, Converter={StaticResource ProtectedToProtectedTextBoxVisibilityConverter}}"/>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Top">
+            <Button x:Name="lockButton" Style="{StaticResource MyButtonStyle}" VerticalAlignment="Center" ToolTip="Reveal" Click="UnlockOrLock_OnClick" Margin="5,0"
+                    Visibility="{Binding IsProtected, Mode=OneWay, Converter={StaticResource ProtectedToProtectedTextBoxVisibilityConverter}}">
+                <Image x:Name="image" Source="../../Icons/unlockwhite.png" Stretch="None" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Button>
+            <Button Style="{StaticResource MyButtonStyle}" VerticalAlignment="Center" ToolTip="Copy to clipboard" Click="Copy_OnClick" Margin="5,0">
+                <Image Source="../../Icons/copy.png" Stretch="None"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
